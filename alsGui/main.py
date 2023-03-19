@@ -25,7 +25,7 @@ import json
 #     admin_button = tk.Button(main_window, text="Admin Interface", command=toggle_admin_interface)
 #     admin_button.pack()
 #
-#     image = Image.open(r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg')
+#     image = Image.open(r'C:\Users\David\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg')
 #     image = image.resize((50, 50), Image.ANTIALIAS)
 #     img = ImageTk.PhotoImage(image)
 #     pictures_button = tk.Button(main_window, text="Pictures Interface", image=img, compound = tk.LEFT, command=toggle_pictures_interface)
@@ -346,6 +346,8 @@ class Window(tk.Tk):
         # raises the current frame to the top
         if hasattr(frame, "_reloadPage"):
             frame._reloadPage()
+        elif hasattr(frame, "loadMusic"):
+            frame.loadMusic()
         frame.tkraise()
 
 
@@ -403,7 +405,7 @@ class MainPage(ttk.Frame):
         switch_imagePae_button = homeButton(
             frame19,
             text="Images",
-            image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\imgBtn.png',
+            image=os.getcwd()+r'\imgBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(ImagePage),
@@ -419,7 +421,7 @@ class MainPage(ttk.Frame):
         switch_directionsPage_button = homeButton(
             frame20,
             text="Directions",
-            image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\dirBtn.png',
+            image=os.getcwd()+r'\dirBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(DirectionsPage),
@@ -441,7 +443,7 @@ class MainPage(ttk.Frame):
         switch_musicPage_button = homeButton(
             frame23,
             text="Music",
-            image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\musicBtn.png',
+            image=os.getcwd()+r'\musicBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(MusicPage),
@@ -456,7 +458,7 @@ class MainPage(ttk.Frame):
         switch_appointmentsPage_button = homeButton(
             frame24,
             text="Appointments",
-            image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\calBtn.png',
+            image=os.getcwd()+r'\calBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(AppointmentsPage),
@@ -554,7 +556,6 @@ class ImagePage(ttk.Frame):
             self.currentFile += 1
         self.loadPic()
 
-
     def loadPic(self):
         self.loadedPic = Image.open(self.picRoot + r"\\" + self.files[self.currentFile])
         self.loadedTk = ImageTk.PhotoImage(self.loadedPic)
@@ -609,13 +610,14 @@ class MusicPage(ttk.Frame):
 
         self.files = os.listdir(self.musicRoot)
         self.currentFile = 0
-        self.totalFiles = len(self.files)
+        self.totalFiles = len(self.files) - 1
         self.loadedMusic = None
         self.loadedTk = None
 
-        self.loadMusic()
+        # self.loadMusic()
 
     def backed(self):
+        print("backed self.currentFile, self.totalFiles ", self.currentFile, self.totalFiles)
         if self.currentFile == 0:
             self.currentFile = self.totalFiles
         else:
@@ -623,6 +625,7 @@ class MusicPage(ttk.Frame):
         self.loadMusic()
 
     def nexted(self):
+        print("nexted self.currentFile, self.totalFiles ", self.currentFile, self.totalFiles)
         if self.currentFile == self.totalFiles:
             self.currentFile = 0
         else:
@@ -638,6 +641,8 @@ class MusicPage(ttk.Frame):
 
     def stop(self):
         pygame.mixer.music.stop()
+
+
 
 
 class AdminPage(ttk.Frame):
@@ -862,8 +867,6 @@ class homeButton(tk.Button):
             kwargs['compound'] = tk.TOP
         super().__init__(parent, **kwargs)
 
-
-
 class adminButton(tk.Button):
     def __init__(self, parent, **kwargs):
         if "image" in kwargs:
@@ -889,10 +892,10 @@ class adminButton(tk.Button):
 # interface_frame = ttk.Frame(root)
 # interface_frame.pack()
 #
-# # image = Image.open(r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg')
+# # image = Image.open(r'C:\Users\David\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg')
 # # image = image.resize((50, 50), Image.ANTIALIAS)
 # # img = ImageTk.PhotoImage(image)
-# pictures_button = homeButton(interface_frame, text="Images", style="homeButtons", image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg', compound=tk.TOP, command=toggle_pictures_interface)
+# pictures_button = homeButton(interface_frame, text="Images", style="homeButtons", image=r'C:\Users\David\PycharmProjects\alsGui\als-pi-gui\alsGui\j.jpg', compound=tk.TOP, command=toggle_pictures_interface)
 # # pictures_button = ttk.Button(interface_frame, text="Images", style="homeButtons", image=img, compound=tk.TOP, command=toggle_pictures_interface)
 # # pictures_button = ttk.Button(interface_frame, text="Pictures", command=lambda: toggle_pictures_interface())
 # pictures_button.grid(row=0, column=0)
