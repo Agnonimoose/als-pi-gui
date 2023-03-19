@@ -5,6 +5,7 @@ import tkinter.font as font
 from tkinter import ttk
 import time
 import pygame
+import json
 
 # admin_window = None
 # appointments_config_window = None
@@ -323,7 +324,7 @@ class Window(tk.Tk):
                     background='#c1e5ff')
 
         self.title("Main Interface")
-
+        # self.attributes("-fullscreen", True)
         container = tk.Frame(self, height=400, width=600)
         container.pack(side="top", fill="both", expand=True)
 
@@ -331,7 +332,7 @@ class Window(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
 
         self.frames = {}
-        for F in (MainPage, ImagePage, MusicPage):
+        for F in (MainPage, ImagePage, MusicPage, AdminPage, DirectionsPage, AppointmentsPage):
             frame = F(container, self)
 
             self.frames[F] = frame
@@ -343,6 +344,8 @@ class Window(tk.Tk):
     def show_frame(self, cont):
         frame = self.frames[cont]
         # raises the current frame to the top
+        if hasattr(frame, "_reloadPage"):
+            frame._reloadPage()
         frame.tkraise()
 
 
@@ -366,7 +369,7 @@ class MainPage(ttk.Frame):
             fg='white',
             relief='flat',
             font = font.Font(size=30, weight="bold"),
-            command=lambda: controller.show_frame(ImagePage),
+            command=lambda: controller.show_frame(AdminPage),
         )
         switch_adminPae_button.pack(anchor="n", side="top")
 
@@ -401,7 +404,6 @@ class MainPage(ttk.Frame):
             frame19,
             text="Images",
             image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\imgBtn.png',
-            # style="homeButton.TButton",
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(ImagePage),
@@ -420,7 +422,7 @@ class MainPage(ttk.Frame):
             image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\dirBtn.png',
             bg='#c1e5ff',
             relief='flat',
-            command=lambda: controller.show_frame(ImagePage),
+            command=lambda: controller.show_frame(DirectionsPage),
         )
         switch_directionsPage_button.pack(expand="true", fill="both", padx=20, pady=20, side="top")
 
@@ -457,7 +459,7 @@ class MainPage(ttk.Frame):
             image=r'C:\Users\PC User\PycharmProjects\alsGui\als-pi-gui\alsGui\calBtn.png',
             bg='#c1e5ff',
             relief='flat',
-            command=lambda: controller.show_frame(ImagePage),
+            command=lambda: controller.show_frame(AppointmentsPage),
         )
 
         switch_appointmentsPage_button.pack(expand="true", fill="both", padx=20, pady=20, side="top")
@@ -519,21 +521,16 @@ class ImagePage(ttk.Frame):
         frame8 = ttk.Frame(self)
         frame8.configure(height=50, width=200)
 
-        switch_homePae_button = adminButton(
-            frame8,
-            text="Home",
-            relief='flat',
-            font = font.Font(size=30, weight="bold"),
-            command=lambda: controller.show_frame(MainPage),
-        )
-
-        switch_homePae_button.pack(side="top")
+        switch_homePage_button =  ttk.Button(self, command=lambda: controller.show_frame(MainPage))
+        switch_homePage_button.configure(text='Exit')
+        switch_homePage_button.pack(side="top")
 
         frame8.pack(expand="false", fill="y", side="top")
         self.configure(height=200, width=200)
-        # self.pack(expand="true", fill="both", side="top")
 
-        self.picRoot = r'C:\Users\PC User\Pictures\Benchmarks'
+        self.picRoot = json.load(open("directories.json", "r"))["images"]
+
+
 
         self.files = os.listdir(self.picRoot)
         self.currentFile = 0
@@ -600,29 +597,23 @@ class MusicPage(ttk.Frame):
         frame8 = ttk.Frame(self)
         frame8.configure(height=50, width=200)
 
-        switch_homePae_button = adminButton(
-            frame8,
-            text="Home",
-            relief='flat',
-            font = font.Font(size=30, weight="bold"),
-            command=lambda: controller.show_frame(MainPage),
-        )
-
-        switch_homePae_button.pack(side="top")
+        switch_homePage_button =  ttk.Button(self, command=lambda: controller.show_frame(MainPage))
+        switch_homePage_button.configure(text='Exit')
+        switch_homePage_button.pack(side="top")
 
         frame8.pack(expand="false", fill="y", side="top")
         self.configure(height=200, width=200)
         # self.pack(expand="true", fill="both", side="top")
 
-        self.picRoot = r'C:\Users\PC User\Pictures\Benchmarks'
+        self.musicRoot = json.load(open("directories.json", "r"))["music"]
 
-        self.files = os.listdir(self.picRoot)
+        self.files = os.listdir(self.musicRoot)
         self.currentFile = 0
         self.totalFiles = len(self.files)
         self.loadedMusic = None
         self.loadedTk = None
 
-        # self.loadMusic()
+        self.loadMusic()
 
     def backed(self):
         if self.currentFile == 0:
@@ -641,37 +632,240 @@ class MusicPage(ttk.Frame):
 
     def loadMusic(self):
         pygame.mixer.init()
-        pygame.mixer.music.load(self.picRoot + r"\\" + self.files[self.currentFile])
-        pygame.mixer.mix.music.play()
+        pygame.mixer.music.load(self.musicRoot + r"\\" + self.files[self.currentFile])
+        pygame.mixer.music.play()
 
 
     def stop(self):
         pygame.mixer.music.stop()
 
 
+class AdminPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+        frame2 = ttk.Frame(self)
+        frame2.configure(height=200, width=200)
+        frame19 = ttk.Frame(frame2)
+        frame19.configure(height=200, width=200)
+        self.DirectionsConfig = ttk.Label(frame19)
+        self.DirectionsConfig.configure(text='Directions Config')
+        self.DirectionsConfig.pack(side="top")
+        frame19.grid(column=0, columnspan=2, row=0, sticky="nsew")
+        frame20 = ttk.Frame(frame2)
+        frame20.configure(height=200, width=200)
+        self.PlaceNameLab = ttk.Label(frame20)
+        self.PlaceNameLab.configure(text='Place Name')
+        self.PlaceNameLab.pack(side="top")
+        frame20.grid(column=0, row=1, sticky="nsew")
+        frame21 = ttk.Frame(frame2)
+        frame21.configure(height=200, width=200)
+        self.placeName = ttk.Entry(frame21)
+        self.placeName.pack(side="top")
+        frame21.grid(column=1, row=1, sticky="nsew")
+        frame22 = ttk.Frame(frame2)
+        frame22.configure(height=200, width=200)
+        self.placeLocLab = ttk.Label(frame22)
+        self.placeLocLab.configure(text='Place Location')
+        self.placeLocLab.pack(side="top")
+        frame22.grid(column=0, row=2, sticky="nsew")
+        frame23 = ttk.Frame(frame2)
+        frame23.configure(height=200, width=200)
+        self.placeLoc = ttk.Entry(frame23)
+        self.placeLoc.pack(side="top")
+        frame23.grid(column=1, row=2, sticky="nsew")
+        frame24 = ttk.Frame(frame2)
+        frame24.configure(height=200, width=200)
+        self.plaeAddInfoLab = ttk.Label(frame24)
+        self.plaeAddInfoLab.configure(text='Additional Info')
+        self.plaeAddInfoLab.pack(side="top")
+        frame24.grid(column=0, row=3, sticky="nsew")
+        frame25 = ttk.Frame(frame2)
+        frame25.configure(height=200, width=200)
+        self.plaeAddInfo = ttk.Entry(frame25)
+        self.plaeAddInfo.pack(side="top")
+        frame25.grid(column=1, row=3, sticky="nsew")
+        frame26 = ttk.Frame(frame2)
+        frame26.configure(height=200, width=200)
+        self.addDir = ttk.Button(frame26, command=lambda: self.addDirection())
+        self.addDir.configure(text='+ Add Direction')
+        self.addDir.pack(side="top")
+        frame26.grid(column=0, columnspan=2, row=4, sticky="nsew")
+        frame2.pack(side="top")
+        frame3 = ttk.Frame(self)
+        frame3.configure(height=200, width=200)
+        frame5 = ttk.Frame(frame3)
+        frame5.configure(height=200, width=200)
+        self.appNameLab = ttk.Label(frame5)
+        self.appNameLab.configure(text='Name of Appointment')
+        self.appNameLab.pack(side="top")
+        frame5.grid(column=0, row=1, sticky="nsew")
+        frame7 = ttk.Frame(frame3)
+        frame7.configure(height=200, width=200)
+        self.appointmentName = ttk.Entry(frame7)
+        self.appointmentName.pack(side="top")
+        frame7.grid(column=1, row=1, sticky="nsew")
+        frame8 = ttk.Frame(frame3)
+        frame8.configure(height=200, width=200)
+        self.appPlaceLab = ttk.Label(frame8)
+        self.appPlaceLab.configure(text='Place of Appointment')
+        self.appPlaceLab.pack(side="top")
+        frame8.grid(column=0, row=2, sticky="nsew")
+        frame9 = ttk.Frame(frame3)
+        frame9.configure(height=200, width=200)
+        self.appPlace = ttk.Entry(frame9)
+        self.appPlace.pack(side="top")
+        frame9.grid(column=1, row=2, sticky="nsew")
+        frame10 = ttk.Frame(frame3)
+        frame10.configure(height=200, width=200)
+        self.appTimeLab = ttk.Label(frame10)
+        self.appTimeLab.configure(text='Time of Appointment')
+        self.appTimeLab.pack(side="top")
+        frame10.grid(column=0, row=3, sticky="nsew")
+        frame11 = ttk.Frame(frame3)
+        frame11.configure(height=200, width=200)
+        self.appTime = ttk.Entry(frame11)
+        self.appTime.pack(side="top")
+        frame11.grid(column=1, row=3, sticky="nsew")
+        frame12 = ttk.Frame(frame3)
+        frame12.configure(height=200, width=200)
+        self.appAdditionalInfoLab = ttk.Label(frame12)
+        self.appAdditionalInfoLab.configure(text='Additional Info')
+        self.appAdditionalInfoLab.pack(side="top")
+        frame12.grid(column=0, row=4, sticky="nsew")
+        frame13 = ttk.Frame(frame3)
+        frame13.configure(height=200, width=200)
+        self.appAddIndo = ttk.Entry(frame13)
+        self.appAddIndo.pack(side="top")
+        frame13.grid(column=1, row=4, sticky="nsew")
+        frame14 = ttk.Frame(frame3)
+        frame14.configure(height=200, width=200)
+        self.appAppointment = ttk.Button(frame14, command=lambda: self.addAppointment())
+        self.appAppointment.configure(text='+ Add Appointment')
+        self.appAppointment.pack(side="top")
+        frame14.grid(column=0, columnspan=2, row=5, sticky="nsew")
+        frame18 = ttk.Frame(frame3)
+        frame18.configure(height=200, width=200)
+        self.Appointments = ttk.Label(frame18)
+        self.Appointments.configure(text='Appointments Config')
+        self.Appointments.pack(side="top")
+        frame18.grid(column=0, columnspan=2, row=0, sticky="nsew")
+        frame3.pack(pady=50, side="top")
+        frame28 = ttk.Frame(self)
+        frame28.configure(height=200, width=200)
+        frame29 = ttk.Frame(frame28)
+        frame29.configure(height=200, width=200)
+        self.clockTimeLabel = ttk.Label(frame29)
+        self.clockTimeLabel.configure(text='Clock Time')
+        self.clockTimeLabel.pack(side="top")
+        frame29.grid(column=0, row=1, sticky="nsew")
+        frame30 = ttk.Frame(frame28)
+        frame30.configure(height=200, width=200)
+        self.clockTime = ttk.Entry(frame30)
+        self.clockTime.pack(side="top")
+        frame30.grid(column=1, row=1, sticky="nsew")
+        frame37 = ttk.Frame(frame28)
+        frame37.configure(height=200, width=200)
+        self.clockButton = ttk.Button(frame37)
+        self.clockButton.configure(text='Set Clock')
+        self.clockButton.pack(side="top")
+        frame37.grid(column=0, columnspan=2, row=5, sticky="nsew")
+        frame38 = ttk.Frame(frame28)
+        frame38.configure(height=200, width=200)
+        self.clockSettingsLab = ttk.Label(frame38)
+        self.clockSettingsLab.configure(text='Clock Settings')
+        self.clockSettingsLab.pack(side="top")
+        frame38.grid(column=0, columnspan=2, row=0, sticky="nsew")
+        frame28.pack(pady=50, side="top")
+        frame39 = ttk.Frame(self)
+        frame39.configure(height=200, width=200)
+        self.exitButton = ttk.Button(frame39, command=lambda: controller.show_frame(MainPage))
+        self.exitButton.configure(text='Exit')
+        self.exitButton.pack(side="top")
+        frame39.pack(side="top")
+        self.configure(height=200, width=200)
+
+    def addAppointment(self):
+        appointements = json.load(open("appointments.json", "r"))
+        tmp = {
+            'name': self.appointmentName.get(),
+            'place': self.appPlace.get(),
+            'time': self.appTime.get(),
+            'info': self.appAddIndo.get()
+        }
+        self.appointmentName.delete(0, 'end')
+        self.appPlace.delete(0, 'end')
+        self.appTime.delete(0, 'end')
+        self.appAddIndo.delete(0, 'end')
+
+        appointements.append(tmp)
+        json.dump(appointements, open("appointments.json", "w"))
+
+    def addDirection(self):
+        directions = json.load(open("directions.json", "r"))
+        tmp = {
+            'name': self.placeName.get(),
+            'location': self.placeLoc.get(),
+            'info': self.plaeAddInfo.get()
+        }
+        self.placeName.delete(0, 'end')
+        self.placeLoc.delete(0, 'end')
+        self.plaeAddInfo.delete(0, 'end')
+
+        directions.append(tmp)
+        json.dump(directions, open("directions.json", "w"))
+
+class DirectionsPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+
+        self.directionLabel = ttk.Label(self)
+        self.directionLabel.configure(text='Directions to add')
+        self.directionLabel.pack(side="top")
+
+        self.homButton = ttk.Button(self, command=lambda: controller.show_frame(MainPage))
+        self.homButton.configure(text='Exit')
+        self.homButton.pack(side="top")
+
+    def _reloadPage(self):
+        directions = json.load(open("directions.json", "r"))
+        if len(directions) > 0:
+            self.directionLabel["text"] = ("\n\n".join(["Name: " + x['name'] + "\nLocation: " + x['location'] + "\nAdditional Information: " + x['info'] for x in directions])) + "\n\n"
+        else:
+            self.directionLabel["text"] = ("no directions recorded yet\n\n")
+
+class AppointmentsPage(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+
+        self.appointmentsLabel = ttk.Label(self)
+        self.appointmentsLabel.configure(text='Appointments to add')
+        self.appointmentsLabel.pack(side="top")
+
+        self.homButton = ttk.Button(self, command=lambda: controller.show_frame(MainPage))
+        self.homButton.configure(text='Exit')
+        self.homButton.pack(side="top")
+
+    def _reloadPage(self):
+        appointments = json.load(open("appointments.json", "r"))
+        if len(appointments) > 0:
+            self.appointmentsLabel["text"] = ("\n\n".join(["Name: " + x['name'] + "\nPlace: " + x['place'] + "\nTime: " + x['time'] + "\nAdditional Information: " + x['info'] for x in appointments])) + "\n\n"
+        else:
+            self.appointmentsLabel["text"] = ("no appointments recorded yet\n\n")
+
 class homeButton(tk.Button):
     def __init__(self, parent, **kwargs):
-        # print("args = ", len(args), args)
-
-
-        print("\n\n")
-        print("kwars = ", len(kwargs), kwargs)
         if "image" in kwargs:
             self.image = Image.open(kwargs['image'])
             self.image = self.image.resize((60, 60), Image.ANTIALIAS)
             self.img = ImageTk.PhotoImage(self.image)
             kwargs['image']=self.img
             kwargs['compound'] = tk.TOP
-        print("kwars 2 = ", len(kwargs), kwargs)
-
         super().__init__(parent, **kwargs)
 
 
 
 class adminButton(tk.Button):
     def __init__(self, parent, **kwargs):
-        # print("args = ", len(args), args)
-        print("kwars = ", len(kwargs), kwargs)
         if "image" in kwargs:
             self.image = Image.open(kwargs['image'])
             self.image = self.image.resize((50, 50), Image.ANTIALIAS)
