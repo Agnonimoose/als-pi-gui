@@ -7,6 +7,7 @@ import time
 import pygame
 import json
 
+
 class Window(tk.Tk):
     def __init__(self, *args, **kwargs):
         # super().__init__(*args, **kwargs)
@@ -99,7 +100,7 @@ class MainPage(ttk.Frame):
         switch_imagePae_button = homeButton(
             frame19,
             text="Images",
-            image=os.getcwd()+r'\imgBtn.png',
+            image=os.getcwd()+r'/imgBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(ImagePage),
@@ -115,7 +116,7 @@ class MainPage(ttk.Frame):
         switch_directionsPage_button = homeButton(
             frame20,
             text="Directions",
-            image=os.getcwd()+r'\dirBtn.png',
+            image=os.getcwd()+r'/dirBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(DirectionsPage),
@@ -137,7 +138,7 @@ class MainPage(ttk.Frame):
         switch_musicPage_button = homeButton(
             frame23,
             text="Music",
-            image=os.getcwd()+r'\musicBtn.png',
+            image=os.getcwd()+r'/musicBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(MusicPage),
@@ -152,7 +153,7 @@ class MainPage(ttk.Frame):
         switch_appointmentsPage_button = homeButton(
             frame24,
             text="Appointments",
-            image=os.getcwd()+r'\calBtn.png',
+            image=os.getcwd()+r'/calBtn.png',
             bg='#c1e5ff',
             relief='flat',
             command=lambda: controller.show_frame(AppointmentsPage),
@@ -251,7 +252,7 @@ class ImagePage(ttk.Frame):
         self.loadPic()
 
     def loadPic(self):
-        self.loadedPic = Image.open(self.picRoot + r"\\" + self.files[self.currentFile])
+        self.loadedPic = Image.open(self.picRoot + r"//" + self.files[self.currentFile])
         self.loadedTk = ImageTk.PhotoImage(self.loadedPic)
         self.picLabel.configure(image=self.loadedTk)
         self.picLabel.image = self.loadedTk
@@ -325,7 +326,7 @@ class MusicPage(ttk.Frame):
 
     def loadMusic(self):
         pygame.mixer.init()
-        pygame.mixer.music.load(self.musicRoot + r"\\" + self.files[self.currentFile])
+        pygame.mixer.music.load(self.musicRoot + r"//" + self.files[self.currentFile])
         pygame.mixer.music.play()
 
 
