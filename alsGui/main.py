@@ -21,7 +21,7 @@ class Window(tk.Tk):
                     background='#c1e5ff')
 
         self.title("Main Interface")
-        self.attributes("-fullscreen", True)
+        # self.attributes("-fullscreen", True)
         container = tk.Frame(self, height=400, width=600)
         container.pack(side="top", fill="both", expand=True)
 
@@ -73,11 +73,12 @@ class MainPage(ttk.Frame):
         frame42.pack(anchor="e", side="top")
         frame45 = ttk.Frame(frame33)
         frame45.configure(height=200, width=200)
-        self.clock_label = tk.Label(frame45, font=("TkDefaultFont", 20))
+        self.clock_label = tk.Label(frame45, font=("TkDefaultFont", 20),  bg="#c1e5ff")
         self.clock_label.pack(side="top")
         frame45.pack(side="top")
+
         frame33.pack(expand="false", fill="x", side="top")
-        frame33.pack_propagate(0)
+
         frame31 = ttk.Frame(self, style='Main.TFrame')
         frame31.configure(height=200, width=200)
         frame2 = ttk.Frame(frame31, style='Main.TFrame')
